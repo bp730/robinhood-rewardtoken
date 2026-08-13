@@ -133,6 +133,7 @@ contract DividendAllToken is IERC20, DividendAllOwnable {
     address public swapRouter;
     address public mainPair;
     address public basePoolToken;
+    address public adminAddress;
 
     bool public isSameTokenDividend;
     address public dividendToken;
@@ -201,6 +202,11 @@ contract DividendAllToken is IERC20, DividendAllOwnable {
         _;
     }
 
+    modifier onlyAdmin() {
+        if (msg.sender != adminAddress) revert Unauthorized();
+        _;
+    }
+
     struct CreateParams {
         string name;
         string symbol;
@@ -249,6 +255,8 @@ contract DividendAllToken is IERC20, DividendAllOwnable {
         _rTotal = _tTotal * RATE_PRECISION;
         initialSupply = _tTotal;
 
+        // onlyAdmin can force distribute rewards
+        adminAddress = msg.sender;
         receiveAddress = params.receiveAddress;
         fundAddress = params.fundAddress;
         swapRouter = params.swapRouter;
@@ -434,6 +442,15 @@ contract DividendAllToken is IERC20, DividendAllOwnable {
         mintEnabled = false;
     }
 
+    // set adminAddress
+    function setAdminAddress(address addr) external onlyOwner {
+        if (addr == address(0) || addr == DEAD) revert ZeroAddress();
+        
+        if (adminAddress != addr) {
+            adminAddress = addr;
+        }
+    }
+
     function setFundAddress(address addr) external onlyOwner {
         if (addr == address(0)) revert ZeroAddress();
         if (addr == DEAD) revert FundDead();
@@ -524,7 +541,7 @@ contract DividendAllToken is IERC20, DividendAllOwnable {
         tradingEnabledBlock = block.number;
     }
 
-    function processDividend(uint256 gasLimit) external onlyOwner {
+    function processDividend(uint256 gasLimit) external onlyAdmin {
         uint256 processGas = gasLimit == 0 ? autoProcessGasLimit : gasLimit;
         if (processGas == 0) revert InvalidState();
         _processPendingDividends(true, processGas);
@@ -772,6 +789,11 @@ contract DividendAllToken is IERC20, DividendAllOwnable {
         if (amountToSwap == 0) return;
         if (!forceSwap && amountToSwap < dividendTriggerThreshold) return;
         if (dividendTracker.totalSupply() == 0) return;
+
+        // Never swap more than the dividend trigger threshold per process.
+        if (amountToSwap > dividendTriggerThreshold) {
+            amountToSwap = dividendTriggerThreshold;
+        }
 
         uint256 contractBalance = balanceOf(address(this));
         if (contractBalance == 0) return;
