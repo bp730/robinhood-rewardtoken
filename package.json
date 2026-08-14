@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "deploy": "npx hardhat ignition deploy ignition/modules/DividendAllToken.ts --network robinhood",
+    "deploy:testnet": "npx hardhat ignition deploy ignition/modules/DividendAllToken.ts --network robinhood-testnet --verify",
+    "deploy:localnet": "npx hardhat ignition deploy ignition/modules/DividendAllToken.ts --network localhost",
     "deploy:counter": "npx hardhat ignition deploy ignition/modules/Counter.ts --network localhost"
   },
   "devDependencies": {
