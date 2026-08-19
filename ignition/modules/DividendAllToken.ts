@@ -30,7 +30,8 @@ const DividendAllTokenModule = buildModule("DividendAllTokenModule", (m) => {
 
   const receiveAddress = m.getParameter(
     "receiveAddress",
-    "0xcF981707674499499c035dc7b5Fc8544f981e09F"
+    "0x99DBD6ec3111948b8fC97Eb7e080Ad6FC9E78368"
+    // "0xcF981707674499499c035dc7b5Fc8544f981e09F"
   );
 
   const fundAddress = m.getParameter(
