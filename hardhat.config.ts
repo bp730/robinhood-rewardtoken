@@ -34,5 +34,32 @@ export default defineConfig({
       url: configVariable("SEPOLIA_RPC_URL"),
       accounts: [configVariable("SEPOLIA_PRIVATE_KEY")],
     },
+    // Mainnet Configuration
+    robinhood: {
+      type: "http",
+      url: configVariable("RH_MAINNET_RPC_URL"), // https://robinhood-mainnet.g.alchemy.com/v2
+      chainId: 4663, // Official Mainnet Chain ID
+      chainType: "op",
+      accounts: [configVariable("PRIVATE_KEY")],
+    },
+    // Testnet Configuration
+    "robinhood-testnet": {
+      type: "http",
+      url: configVariable("RH_TESTNET_RPC_URL"), //  "https://robinhood-testnet.g.alchemy.com/v2",
+      chainId: 46630, // Official Testnet Chain ID
+      chainType: "op",
+      accounts: [configVariable("TEST_PRIVATE_KEY")],
+    }
+  },
+  verify: {
+    blockscout: {
+      enabled: false,
+    },
+    etherscan: {
+      enabled: false,
+    },
+    sourcify: {
+      enabled: true,
+    },
   },
 });
